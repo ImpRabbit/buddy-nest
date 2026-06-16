@@ -1,0 +1,2789 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>きみのルームメイト - v2 Complete Edition</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background-color: #2b2b4b;
+    color: #333;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* =========================
+   設定画面
+========================= */
+
+#setup-screen {
+    background-color: #2b2b4b;
+    height: 100dvh;
+    overflow-y: auto;
+    padding-bottom: 40px;
+}
+
+.header-title {
+    text-align: center;
+    color: white;
+    padding: 30px 10px 20px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.setup-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    background-color: #fffaf0;
+    border-radius: 24px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card.warning-card {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+}
+
+.card-num {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: #e8a75d;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #4a4a4a;
+}
+
+.card-note {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: #666;
+    margin-top: 8px;
+}
+
+.image-uploader {
+    border: 2px dashed #e8a75d;
+    border-radius: 16px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: #fffaf0;
+    text-align: center;
+}
+
+.preview-img {
+    max-height: 120px;
+    max-width: 100%;
+    object-fit: contain;
+    display: none;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-bottom: 2px solid #dcdcdc;
+    background: transparent;
+    font-size: 15px;
+    outline: none;
+}
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.tag {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.tag.selected {
+    background-color: #e8a75d;
+    color: white;
+    border-color: #e8a75d;
+    font-weight: bold;
+}
+
+.date-select-group {
+    display: flex;
+    gap: 10px;
+}
+
+.date-select-group select {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    padding: 10px;
+    -webkit-appearance: none;
+    flex: 1;
+    text-align: center;
+}
+
+.start-btn,
+.reset-btn {
+    border: none;
+    border-radius: 25px;
+    padding: 16px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    width: 100%;
+    cursor: pointer;
+}
+
+.start-btn {
+    background-color: #e8a75d;
+    color: white;
+    box-shadow: 0 4px 10px rgba(232,167,93,0.3);
+}
+
+.reset-btn {
+    background-color: #ef4444;
+    color: white;
+    box-shadow: 0 4px 10px rgba(239,68,68,0.25);
+}
+
+/* =========================
+   ゲーム画面
+========================= */
+
+#game-screen {
+    display: none;
+    background-color: #fffaf0;
+    height: 100dvh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.stage {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #b0c4de, #fffaf0);
+    padding-bottom: 190px;
+}
+
+.top-bar {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(255, 250, 240, 0.94);
+    padding: 10px 14px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    z-index: 5;
+    font-size: 0.82rem;
+}
+
+.status-left {
+    min-width: 0;
+}
+
+.char-name-display {
+    font-weight: bold;
+    color: #2b2b4b;
+}
+
+.char-status-indicators {
+    color: #555;
+    font-size: 0.72rem;
+    margin-top: 3px;
+    line-height: 1.4;
+}
+
+.inventory-block {
+    text-align: right;
+    font-size: 0.74rem;
+    color: #2b2b4b;
+    line-height: 1.45;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+#moving-character {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    bottom: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: contain;
+    transition: left 3s ease-in-out, transform 0.5s;
+    z-index: 2;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#stroke-guide {
+    display: none;
+    position: absolute;
+    top: 115px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(232,167,93,0.92);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 30;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+.heart-effect {
+    position: fixed;
+    color: #ff4d6d;
+    font-size: 24px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 9999;
+    animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-60px) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* =========================
+   メニュー
+========================= */
+
+.menu-area {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(480px, calc(100% - 32px));
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    z-index: 5;
+}
+
+.menu-btn {
+    background-color: #2b2b4b;
+    color: white;
+    border: none;
+    border-radius: 18px;
+    padding: 12px 14px;
+    font-weight: bold;
+    font-size: 0.82rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    cursor: pointer;
+    text-align: center;
+}
+
+.menu-btn.nav-explore {
+    background-color: #e8a75d;
+}
+
+.menu-btn.stroke-mode-btn {
+    background-color: #ff4d6d;
+}
+
+.menu-btn.reset-menu-btn {
+    background-color: #ef4444;
+}
+
+/* =========================
+   下から出るウィンドウ
+========================= */
+
+.overlay-window {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 74dvh;
+    max-height: 74dvh;
+
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 16px;
+
+    box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    color: #333;
+    z-index: 100;
+
+    transform: translateY(120%);
+    transition: transform 0.35s ease-out;
+
+    overflow: hidden;
+}
+
+.overlay-window.open {
+    transform: translateY(0);
+}
+
+.win-header {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+.win-title {
+    font-weight: bold;
+    color: #2b2b4b;
+}
+
+.close-btn {
+    background: #e5e5ea;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-weight: bold;
+    color: #666;
+    cursor: pointer;
+}
+
+/* =========================
+   会話
+========================= */
+
+.chat-box {
+    flex: 1;
+    min-height: 0;
+    border: 1px solid #e5e5ea;
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 14px;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.message {
+    padding: 10px 14px;
+    border-radius: 16px;
+    max-width: 85%;
+    font-size: 14px;
+    line-height: 1.45;
+    word-break: break-word;
+}
+
+.user-msg {
+    background-color: #e8a75d;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.ai-msg {
+    background-color: #e5e5ea;
+    color: black;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.send-area {
+    flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+}
+
+.send-area input {
+    flex: 1;
+    border: 1px solid #d2d2d7;
+    border-radius: 12px;
+    padding: 12px;
+    background: #f5f5f7;
+    outline: none;
+}
+
+/* =========================
+   探索・バトル
+========================= */
+
+.explore-zone {
+    background: #16213e;
+    color: white;
+}
+
+.explore-zone .win-title {
+    color: white;
+}
+
+.explore-display {
+    border: 1px solid #334155;
+    height: 145px;
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 12px;
+    background: #0f172a;
+    font-size: 0.78rem;
+    font-family: monospace;
+    color: #38bdf8;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.battle-view {
+    display: none;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    padding: 10px;
+    border-radius: 12px;
+    margin-top: 2px;
+}
+
+.battle-side {
+    width: 40%;
+    text-align: center;
+}
+
+.hp-bar-bg {
+    width: 100%;
+    background: #475569;
+    height: 7px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.hp-bar-fill {
+    background: #ef4444;
+    height: 100%;
+    width: 100%;
+    transition: width 0.3s;
+}
+
+.battle-cmds {
+    display: none;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+}
+
+.battle-btn {
+    border: none;
+    padding: 10px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: white;
+    font-size: 0.74rem;
+}
+
+.battle-item-count {
+    font-size: 0.65rem;
+    opacity: 0.9;
+}
+
+/* =========================
+   リスト
+========================= */
+
+.grid-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 5px;
+    align-content: start;
+}
+
+.item-card {
+    background: #fffaf0;
+    border: 1px solid #e8a75d;
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    text-align: center;
+}
+
+.item-name {
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: #2b2b4b;
+}
+
+.item-desc {
+    font-size: 0.7rem;
+    color: #666;
+    line-height: 1.45;
+}
+
+.item-btn {
+    background: #2b2b4b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    width: 100%;
+}
+
+.item-btn:disabled {
+    background: #999;
+}
+
+/* =========================
+   日記
+========================= */
+
+.diary-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.diary-card {
+    background: #fffaf0;
+    border: 3px solid #e8a75d;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    color: #333;
+}
+
+.diary-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-align: center;
+    color: #2b2b4b;
+    border-bottom: 2px dashed #e8a75d;
+    padding-bottom: 8px;
+}
+
+.diary-body {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    border: 1px solid #e5e5ea;
+    height: 180px;
+    overflow-y: auto;
+    font-style: italic;
+}
+
+.diary-rewards {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #10b981;
+    text-align: center;
+    background: #e6f4ea;
+    padding: 8px;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     設定画面
+========================= -->
+
+<div id="setup-screen">
+
+    <div class="header-title">
+        ✦ きみのルームメイト ✦
+    </div>
+
+    <div class="setup-container">
+
+        <div class="card warning-card">
+            <div class="card-title">🔑 Gemini APIキー</div>
+            <input type="password" id="apiKey" placeholder="AIzaSy...">
+
+            <div class="card-note">
+                ※このv2ではAPIキーをセーブしません。ページを開くたびに入力が必要です。<br>
+                端末内にキーを残さないための安全仕様です。
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-num">1</div>
+            <div class="card-title">キャラクターの画像</div>
+
+            <div class="image-uploader" onclick="document.getElementById('imageInput').click()">
+                <span id="uploader-prompt" style="color:#e8a75d;font-size:0.85rem;">
+                    タップして透過画像を選択
+                </span>
+
+                <img id="charImgPreview" class="preview-img" alt="preview">
+            </div>
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+                style="display:none;"
+                onchange="previewImage(this)"
+            >
+        </div>
+
+        <div class="card">
+            <div class="card-num">2</div>
+            <div class="card-title">なまえ</div>
+            <input type="text" id="charName" value="ミルク">
+        </div>
+
+        <div class="card">
+            <div class="card-num">3</div>
+            <div class="card-title">せいかく</div>
+
+            <div class="tag-container">
+                <div class="tag" data-tag="元気っこ" onclick="toggleTag(this)">元気っこ</div>
+                <div class="tag selected" data-tag="ツンデレ" onclick="toggleTag(this)">ツンデレ</div>
+                <div class="tag" data-tag="おっとり系" onclick="toggleTag(this)">おっとり系</div>
+                <div class="tag" data-tag="頑張り屋" onclick="toggleTag(this)">頑張り屋</div>
+            </div>
+
+           <textarea id="charPersonalityFree" placeholder="自由な裏設定を入力"></textarea>
+        </div>
+
+        <div class="card">
+            <div class="card-num">4</div>
+            <div class="card-title">キャラの誕生日</div>
+
+            <div class="date-select-group">
+                <select id="charBirthMonth"></select>
+                <select id="charBirthDay"></select>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-num">5</div>
+            <div class="card-title">あなたのこと</div>
+
+            <input type="text" id="userName" value="マスター">
+
+            <div class="date-select-group" style="margin-top:10px;">
+                <select id="userBirthMonth"></select>
+                <select id="userBirthDay"></select>
+            </div>
+        </div>
+
+        <button class="start-btn" onclick="startGame()">
+            いっしょに暮らす
+        </button>
+
+        <button class="reset-btn" onclick="resetGameData()">
+            セーブデータを削除する
+        </button>
+
+    </div>
+</div>
+
+
+<!-- =========================
+     ゲーム画面
+========================= -->
+
+<div id="game-screen">
+
+    <div id="stroke-guide">
+        キャラクターをタップしてなでてね！
+    </div>
+
+    <!-- 上部ステータス -->
+
+    <div class="top-bar">
+
+        <div class="status-left">
+            <div class="char-name-display" id="displayName">
+                ミルク
+            </div>
+
+            <div class="char-status-indicators" id="statusIndicators">
+                🧡好感度:0 | 🍖満腹:50 | ❤️HP:100/100 | ✨SP:50/50
+            </div>
+        </div>
+
+        <div class="inventory-block" id="inventory-display">
+            💰100G<br>
+            🎒🍓3 🥕1 🥩0 🧪1 🔮1 🧂0
+        </div>
+
+    </div>
+
+
+    <!-- キャラ表示 -->
+
+    <div class="stage" id="stage">
+
+        <img
+            id="moving-character"
+            src="https://images.unsplash.com/photo-1535268647977-a403b69fc756?w=150&auto=format&fit=crop"
+            alt="character"
+            onclick="handleCharacterTap(event)"
+        >
+
+    </div>
+
+
+    <!-- メニュー -->
+
+    <div class="menu-area">
+
+        <button class="menu-btn nav-explore"
+                onclick="openWindow('exploreWindow')">
+            探索へ向かう
+        </button>
+
+        <button class="menu-btn stroke-mode-btn"
+                id="strokeToggleBtn"
+                onclick="toggleStrokeMode()">
+            なでる
+        </button>
+
+        <button class="menu-btn"
+                onclick="openTalkWindow()">
+            会話する
+        </button>
+
+        <button class="menu-btn"
+                onclick="openKitchenWindow()">
+            キッチン
+        </button>
+
+        <button class="menu-btn"
+                onclick="openShopWindow()">
+            ショップ
+        </button>
+
+        <button class="menu-btn reset-menu-btn"
+                onclick="resetGameData()">
+            リセット
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         会話ウィンドウ
+    ========================= -->
+
+    <div class="overlay-window" id="talkWindow">
+
+        <div class="win-header">
+            <div class="win-title" id="talkTitle">
+                会話
+            </div>
+
+            <button class="close-btn"
+                    onclick="closeWindow('talkWindow')">
+                ×
+            </button>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+
+            <div class="message ai-msg" id="welcomeMessage">
+                （話しかけるのを待っている…）
+            </div>
+
+        </div>
+
+        <div id="ai-status"
+             style="font-size:10px;color:#888;text-align:center;">
+        </div>
+
+        <div class="send-area">
+
+            <input
+                type="text"
+                id="userInput"
+                placeholder="話しかける..."
+            >
+
+            <button
+                class="menu-btn"
+                onclick="sendMessage()"
+                style="border-radius:12px;"
+            >
+                送信
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         探索・バトルウィンドウ
+    ========================= -->
+
+    <div class="overlay-window explore-zone" id="exploreWindow">
+
+        <div class="win-header">
+
+            <div class="win-title">
+                周辺の探索
+            </div>
+
+            <button class="close-btn"
+                    onclick="stopExploring()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="explore-display" id="exploreLog">
+            <div>探索準備完了。</div>
+        </div>
+
+        <div class="battle-view" id="battleView">
+
+            <div class="battle-side">
+                <span id="bt-my-name"
+                      style="font-size:0.75rem;">
+                    キャラ
+                </span>
+
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill"
+                         id="my-hp"
+                         style="background:#10b981;">
+                    </div>
+                </div>
+
+                <span id="my-sp-text"
+                      style="font-size:0.65rem;">
+                    HP:100/100 / SP:50/50
+                </span>
+            </div>
+
+            <div style="color:#ef4444;font-weight:bold;">
+                VS
+            </div>
+
+            <div class="battle-side">
+                <span id="enemy-name"
+                      style="font-size:0.75rem;">
+                    モンスター
+                </span>
+
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill"
+                         id="enemy-hp">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button
+            class="start-btn"
+            id="explore-action-btn"
+            onclick="toggleExploreState()"
+        >
+            探索を開始する
+        </button>
+
+        <div class="battle-cmds" id="battleCmds">
+
+            <button
+                class="battle-btn"
+                style="background:#3b82f6;"
+                onclick="fightAction('normal')"
+            >
+                通常攻撃
+            </button>
+
+            <button
+                class="battle-btn"
+                style="background:#8b5cf6;"
+                onclick="fightAction('special')"
+            >
+                必殺<br>
+                <span class="battle-item-count">15SP</span>
+            </button>
+
+            <button
+                class="battle-btn"
+                style="background:#10b981;"
+                onclick="fightAction('skill')"
+            >
+                スキル<br>
+                <span class="battle-item-count">20SP</span>
+            </button>
+
+            <button
+                class="battle-btn"
+                style="background:#f59e0b;"
+                onclick="useBattleItem('hp')"
+            >
+                HP薬<br>
+                <span class="battle-item-count" id="battle-hp-potion-count">×1</span>
+            </button>
+
+            <button
+                class="battle-btn"
+                style="background:#ec4899;"
+                onclick="useBattleItem('sp')"
+            >
+                SP薬<br>
+                <span class="battle-item-count" id="battle-sp-potion-count">×1</span>
+            </button>
+
+            <button
+                class="battle-btn"
+                style="background:#64748b;"
+                onclick="runAway()"
+            >
+                逃げる
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         キッチン
+    ========================= -->
+
+    <div class="overlay-window" id="kitchenWindow">
+
+        <div class="win-header">
+            <div class="win-title">
+                キッチン・調理
+            </div>
+
+            <button class="close-btn"
+                    onclick="closeWindow('kitchenWindow')">
+                ×
+            </button>
+        </div>
+
+        <div class="grid-list" id="kitchen-list"></div>
+
+    </div>
+
+
+    <!-- =========================
+         ショップ
+    ========================= -->
+
+    <div class="overlay-window" id="shopWindow">
+
+        <div class="win-header">
+
+            <div class="win-title">
+                ショップ
+            </div>
+
+            <button class="close-btn"
+                    onclick="closeWindow('shopWindow')">
+                ×
+            </button>
+
+        </div>
+
+        <div class="grid-list" id="shop-list"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     留守番日記
+========================= -->
+
+<div class="diary-overlay" id="diaryOverlay">
+
+    <div class="diary-card">
+
+        <div class="diary-title" id="diaryTitle">
+            留守中の日記
+        </div>
+
+        <div class="diary-body" id="diaryBody">
+            考えています...
+        </div>
+
+        <div class="diary-rewards" id="diaryRewards">
+            💰 +0G | 🍓 +0
+        </div>
+
+        <button
+            class="start-btn"
+            onclick="closeDiary()"
+            style="padding:10px;"
+        >
+            日記を閉じる
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+/* =========================
+   基本データ
+========================= */
+
+let player = {
+    gold: 100,
+    love: 0,
+    fullness: 50,
+    lastEaten: ""
+};
+
+let bag = {
+    berry: 3,
+    vegetable: 1,
+    meat: 0,
+    spice: 0,
+    potionHp: 1,
+    potionSp: 1
+};
+
+let battle = {
+    myHp: 100,
+    myMaxHp: 100,
+    mySp: 50,
+    myMaxSp: 50,
+    enemyHp: 0,
+    enemyMaxHp: 0,
+    enemyName: "",
+    inBattle: false,
+    buff: false,
+    debuff: false
+};
+
+let chatHistory = [];
+let charImageDataUrl = "";
+
+let exploreInterval = null;
+let regenTimer = null;
+let saveTimer = null;
+let moveTimer = null;
+
+let isBirthdayEvent = false;
+let isStrokeMode = false;
+let strokeCountJustNow = 0;
+
+/* =========================
+   初期化
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+    initDates();
+    loadData();
+});
+
+function initDates() {
+    const monthIds = ["charBirthMonth", "userBirthMonth"];
+    const dayIds = ["charBirthDay", "userBirthDay"];
+
+    monthIds.forEach(id => {
+        const select = document.getElementById(id);
+        select.innerHTML = "";
+
+        for (let i = 1; i <= 12; i++) {
+            select.add(new Option(`${i}月`, i));
+        }
+    });
+
+    dayIds.forEach(id => {
+        const select = document.getElementById(id);
+        select.innerHTML = "";
+
+        for (let i = 1; i <= 31; i++) {
+            select.add(new Option(`${i}日`, i));
+        }
+    });
+}
+
+/* =========================
+   セーブ・ロード
+========================= */
+
+function collectSelectedTags() {
+    return Array.from(document.querySelectorAll(".tag.selected"))
+        .map(tag => tag.dataset.tag || tag.innerText);
+}
+
+function applySelectedTags(savedTags) {
+    if (!Array.isArray(savedTags)) return;
+
+    document.querySelectorAll(".tag").forEach(tag => {
+        const value = tag.dataset.tag || tag.innerText;
+        tag.classList.toggle("selected", savedTags.includes(value));
+    });
+}
+
+function saveData() {
+    const data = {
+        player,
+        bag,
+        battle: {
+            myHp: battle.myHp,
+            myMaxHp: battle.myMaxHp,
+            mySp: battle.mySp,
+            myMaxSp: battle.myMaxSp
+        },
+        character: {
+            name: document.getElementById("charName").value,
+            personalityFree: document.getElementById("charPersonalityFree").value,
+            selectedTags: collectSelectedTags(),
+            birthMonth: document.getElementById("charBirthMonth").value,
+            birthDay: document.getElementById("charBirthDay").value,
+            imageDataUrl: charImageDataUrl
+        },
+        user: {
+            name: document.getElementById("userName").value,
+            birthMonth: document.getElementById("userBirthMonth").value,
+            birthDay: document.getElementById("userBirthDay").value
+        },
+        chatHistory,
+        started: document.getElementById("game-screen").style.display === "flex"
+    };
+
+    localStorage.setItem("roommate_save_v2", JSON.stringify(data));
+    localStorage.setItem("roommate_last_saved_time_v2", String(Date.now()));
+}
+
+function loadData() {
+    const saved = localStorage.getItem("roommate_save_v2");
+
+    if (!saved) return;
+
+    try {
+        const parsed = JSON.parse(saved);
+
+        if (parsed.player) player = { ...player, ...parsed.player };
+        if (parsed.bag) bag = { ...bag, ...parsed.bag };
+
+        if (parsed.battle) {
+            battle.myHp = parsed.battle.myHp ?? battle.myHp;
+            battle.myMaxHp = parsed.battle.myMaxHp ?? battle.myMaxHp;
+            battle.mySp = parsed.battle.mySp ?? battle.mySp;
+            battle.myMaxSp = parsed.battle.myMaxSp ?? battle.myMaxSp;
+        }
+
+        if (parsed.character) {
+            document.getElementById("charName").value = parsed.character.name || "ミルク";
+            document.getElementById("charPersonalityFree").value = parsed.character.personalityFree || "";
+
+            applySelectedTags(parsed.character.selectedTags);
+
+            if (parsed.character.birthMonth) {
+                document.getElementById("charBirthMonth").value = parsed.character.birthMonth;
+            }
+
+            if (parsed.character.birthDay) {
+                document.getElementById("charBirthDay").value = parsed.character.birthDay;
+            }
+
+            if (parsed.character.imageDataUrl) {
+                charImageDataUrl = parsed.character.imageDataUrl;
+
+                const preview = document.getElementById("charImgPreview");
+                const prompt = document.getElementById("uploader-prompt");
+
+                preview.src = charImageDataUrl;
+                preview.style.display = "block";
+                prompt.style.display = "none";
+            }
+        }
+
+        if (parsed.user) {
+            document.getElementById("userName").value = parsed.user.name || "マスター";
+
+            if (parsed.user.birthMonth) {
+                document.getElementById("userBirthMonth").value = parsed.user.birthMonth;
+            }
+
+            if (parsed.user.birthDay) {
+                document.getElementById("userBirthDay").value = parsed.user.birthDay;
+            }
+        }
+
+        if (Array.isArray(parsed.chatHistory)) {
+            chatHistory = parsed.chatHistory.slice(-20);
+        }
+
+        if (parsed.started) {
+            startGame(true);
+        }
+
+    } catch (error) {
+        console.error("セーブデータ読み込み失敗:", error);
+        alert("セーブデータの読み込みに失敗しました。必要ならリセットしてください。");
+    }
+}
+
+/* =========================
+   リセット
+========================= */
+
+function resetGameData() {
+    const ok = confirm(
+`本当にすべてのセーブデータを削除しますか？
+
+・キャラ設定
+・画像
+・好感度
+・満腹度
+・アイテム
+・会話履歴
+・留守番時間
+
+すべて消えます。`
+    );
+
+    if (!ok) return;
+
+    localStorage.removeItem("roommate_save_v2");
+    localStorage.removeItem("roommate_last_saved_time_v2");
+
+    alert("セーブデータを削除しました。ページを再読み込みします。");
+    location.reload();
+}
+
+/* =========================
+   UI共通
+========================= */
+
+function toggleTag(tagElement) {
+    tagElement.classList.toggle("selected");
+    saveData();
+}
+
+function closeAllWindows() {
+    document.querySelectorAll(".overlay-window").forEach(windowElement => {
+        windowElement.classList.remove("open");
+    });
+}
+
+function openWindow(id) {
+    closeAllWindows();
+
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    target.classList.add("open");
+}
+
+function closeWindow(id) {
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    target.classList.remove("open");
+}
+
+function openTalkWindow() {
+    openWindow("talkWindow");
+}
+
+function openKitchenWindow() {
+    updateKitchenUI();
+    openWindow("kitchenWindow");
+}
+
+function openShopWindow() {
+    updateShopUI();
+    openWindow("shopWindow");
+}
+
+function updateTopUI() {
+    document.getElementById("statusIndicators").innerText =
+        `🧡好感度:${player.love} | 🍖満腹:${player.fullness} | ❤️HP:${battle.myHp}/${battle.myMaxHp} | ✨SP:${battle.mySp}/${battle.myMaxSp}`;
+
+    document.getElementById("inventory-display").innerHTML =
+        `💰${player.gold}G<br>` +
+        `🎒🍓${bag.berry} 🥕${bag.vegetable} 🥩${bag.meat} 🧪${bag.potionHp} 🔮${bag.potionSp} 🧂${bag.spice}`;
+
+    const hpPotion = document.getElementById("battle-hp-potion-count");
+    const spPotion = document.getElementById("battle-sp-potion-count");
+
+    if (hpPotion) hpPotion.innerText = `×${bag.potionHp}`;
+    if (spPotion) spPotion.innerText = `×${bag.potionSp}`;
+}
+
+function updateBattleUI() {
+    const myHpRate = Math.max(0, battle.myHp / battle.myMaxHp) * 100;
+    const enemyHpRate = battle.enemyMaxHp
+        ? Math.max(0, battle.enemyHp / battle.enemyMaxHp) * 100
+        : 0;
+
+    const myBar = document.getElementById("my-hp");
+    const enemyBar = document.getElementById("enemy-hp");
+    const spText = document.getElementById("my-sp-text");
+
+    if (myBar) myBar.style.width = `${myHpRate}%`;
+    if (enemyBar) enemyBar.style.width = `${enemyHpRate}%`;
+
+    if (spText) {
+        spText.innerText =
+            `HP:${battle.myHp}/${battle.myMaxHp} / SP:${battle.mySp}/${battle.myMaxSp}`;
+    }
+
+    updateTopUI();
+}
+
+function appendMessage(text, className) {
+    const box = document.getElementById("chatBox");
+    const msg = document.createElement("div");
+
+    msg.className = `message ${className}`;
+    msg.innerText = text;
+
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+}
+
+/* =========================
+   画像アップロード
+========================= */
+
+function previewImage(input) {
+    if (!input.files || !input.files[0]) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        charImageDataUrl = event.target.result;
+
+        const preview = document.getElementById("charImgPreview");
+        const prompt = document.getElementById("uploader-prompt");
+
+        preview.src = charImageDataUrl;
+        preview.style.display = "block";
+        prompt.style.display = "none";
+
+        saveData();
+    };
+
+    reader.readAsDataURL(input.files[0]);
+}
+
+/* =========================
+   ゲーム開始
+========================= */
+
+function startGame(fromLoad = false) {
+
+    const apiKey =
+        document.getElementById("apiKey")
+        .value
+        .trim();
+
+    if (!apiKey) {
+        alert("APIキーを入力してください");
+        return;
+    }
+
+    document.getElementById("setup-screen").style.display = "none";
+    document.getElementById("game-screen").style.display = "flex";
+
+    const characterName =
+        document.getElementById("charName")
+        .value
+        .trim() || "ミルク";
+
+    document.getElementById("displayName").innerText =
+        characterName;
+
+    document.getElementById("talkTitle").innerText =
+        `${characterName}との会話`;
+
+    if (charImageDataUrl) {
+        document.getElementById("moving-character").src =
+            charImageDataUrl;
+    }
+
+    checkBirthdays();
+
+    updateTopUI();
+    updateBattleUI();
+
+    initMovement();
+    startPassiveTimers();
+
+    if (!fromLoad) {
+        saveData();
+        triggerGreeting();
+    }
+    else {
+        calculateOfflineTime();
+    }
+}
+
+/* =========================
+   性格取得
+========================= */
+
+function getFullPersonality() {
+
+    const tags = Array.from(
+        document.querySelectorAll(".tag.selected")
+    )
+    .map(tag => tag.dataset.tag || tag.innerText)
+    .join(",");
+
+    const free =
+        document.getElementById("charPersonalityFree")
+        .value
+        .trim();
+
+    if (free) {
+        return `${tags}（${free}）`;
+    }
+
+    return tags || "普通";
+}
+
+/* =========================
+   誕生日判定
+========================= */
+
+function checkBirthdays() {
+
+    const today = new Date();
+
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    const charMonth =
+        Number(document.getElementById("charBirthMonth").value);
+
+    const charDay =
+        Number(document.getElementById("charBirthDay").value);
+
+    const userMonth =
+        Number(document.getElementById("userBirthMonth").value);
+
+    const userDay =
+        Number(document.getElementById("userBirthDay").value);
+
+    if (month === charMonth && day === charDay) {
+        isBirthdayEvent = "char";
+    }
+    else if (month === userMonth && day === userDay) {
+        isBirthdayEvent = "user";
+    }
+    else {
+        isBirthdayEvent = false;
+    }
+}
+
+/* =========================
+   キャラ移動
+========================= */
+
+function initMovement() {
+
+    clearTimeout(moveTimer);
+    moveTimer = null;
+
+    const character = document.getElementById("moving-character");
+    const stage = document.getElementById("stage");
+
+    function moveOnce() {
+
+        if (
+            document.getElementById("game-screen").style.display !== "flex"
+        ) {
+            return;
+        }
+
+        if (isStrokeMode) {
+            return;
+        }
+
+        const maxLeft =
+            Math.max(0, stage.clientWidth - character.clientWidth);
+
+        const targetLeft =
+            Math.random() * maxLeft;
+
+        const currentLeft =
+            character.offsetLeft;
+
+        const direction =
+            targetLeft > currentLeft ? -1 : 1;
+
+        character.style.left =
+            `${targetLeft}px`;
+
+        character.style.transform =
+            `scaleX(${direction})`;
+
+        moveTimer = setTimeout(
+            moveOnce,
+            3000 + Math.random() * 3000
+        );
+    }
+
+    moveTimer = setTimeout(moveOnce, 1000);
+}
+
+/* =========================
+   なでるモード
+========================= */
+
+function toggleStrokeMode() {
+
+    isStrokeMode = !isStrokeMode;
+
+    const button =
+        document.getElementById("strokeToggleBtn");
+
+    const guide =
+        document.getElementById("stroke-guide");
+
+    const character =
+        document.getElementById("moving-character");
+
+    if (isStrokeMode) {
+
+        clearTimeout(moveTimer);
+        moveTimer = null;
+
+        button.innerText = "戻る";
+        button.style.background = "#2b2b4b";
+
+        guide.style.display = "block";
+
+        character.style.left = "50%";
+        character.style.transform =
+            "translateX(-50%) scaleX(1)";
+    }
+    else {
+
+        button.innerText = "なでる";
+        button.style.background = "#ff4d6d";
+
+        guide.style.display = "none";
+
+        initMovement();
+    }
+}
+
+function handleCharacterTap(event) {
+
+    if (!isStrokeMode) return;
+
+    const heart =
+        document.createElement("div");
+
+    heart.className = "heart-effect";
+    heart.innerText = "🧡";
+
+    heart.style.left =
+        `${event.clientX - 12}px`;
+
+    heart.style.top =
+        `${event.clientY - 20}px`;
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => {
+        heart.remove();
+    }, 1000);
+
+    player.love += 2;
+
+    if (player.love > 9999) {
+        player.love = 9999;
+    }
+
+    strokeCountJustNow++;
+
+    updateTopUI();
+    saveData();
+}
+
+/* =========================
+   パッシブ回復タイマー
+========================= */
+
+function startPassiveTimers() {
+
+    clearInterval(regenTimer);
+
+    regenTimer = setInterval(() => {
+
+        let changed = false;
+
+        /* HP自然回復 */
+
+        if (
+            !battle.inBattle &&
+            battle.myHp < battle.myMaxHp
+        ) {
+            battle.myHp += 1;
+            changed = true;
+        }
+
+        /* SP自然回復 */
+
+        if (
+            battle.mySp < battle.myMaxSp
+        ) {
+            battle.mySp += 2;
+            changed = true;
+        }
+
+        /* 満腹度減少 */
+
+        if (
+            player.fullness > 0 &&
+            Math.random() < 0.15
+        ) {
+            player.fullness -= 1;
+            changed = true;
+        }
+
+        if (battle.myHp > battle.myMaxHp) {
+            battle.myHp = battle.myMaxHp;
+        }
+
+        if (battle.mySp > battle.myMaxSp) {
+            battle.mySp = battle.myMaxSp;
+        }
+
+        if (changed) {
+            updateTopUI();
+            updateBattleUI();
+            saveData();
+        }
+
+    }, 5000);
+}
+
+/* =========================
+   探索
+========================= */
+
+function toggleExploreState() {
+
+    const button =
+        document.getElementById("explore-action-btn");
+
+    if (exploreInterval) {
+        pauseExploring();
+        return;
+    }
+
+    button.innerText = "探索を一時停止";
+    button.style.background = "#64748b";
+
+    logEx("森へ出発しました。探索開始…");
+
+    exploreInterval = setInterval(() => {
+
+        if (battle.inBattle) return;
+
+        const encounterRate = Math.random();
+
+        if (encounterRate < 0.35) {
+            startBattle();
+        }
+        else {
+            findExploreReward();
+        }
+
+    }, 3000);
+}
+
+function pauseExploring() {
+
+    clearInterval(exploreInterval);
+    exploreInterval = null;
+
+    const button =
+        document.getElementById("explore-action-btn");
+
+    button.innerText = "探索を開始する";
+    button.style.background = "#e8a75d";
+
+    logEx("探索を一時停止しました");
+
+    saveData();
+}
+
+function stopExploring() {
+
+    clearInterval(exploreInterval);
+    exploreInterval = null;
+
+    battle.inBattle = false;
+
+    document.getElementById("battleView").style.display =
+        "none";
+
+    document.getElementById("battleCmds").style.display =
+        "none";
+
+    const button =
+        document.getElementById("explore-action-btn");
+
+    button.style.display = "block";
+    button.innerText = "探索を開始する";
+    button.style.background = "#e8a75d";
+
+    closeWindow("exploreWindow");
+
+    saveData();
+}
+
+function findExploreReward() {
+
+    const rewards = [
+        "berry",
+        "vegetable",
+        "gold"
+    ];
+
+    const reward =
+        rewards[Math.floor(Math.random() * rewards.length)];
+
+    if (reward === "berry") {
+        bag.berry++;
+        logEx("🍓 野生のベリーを見つけた！");
+    }
+
+    if (reward === "vegetable") {
+        bag.vegetable++;
+        logEx("🥕 野菜を発見！");
+    }
+
+    if (reward === "gold") {
+
+        const amount =
+            Math.floor(Math.random() * 10) + 5;
+
+        player.gold += amount;
+
+        logEx(`💰 ${amount}G 見つけた！`);
+    }
+
+    updateTopUI();
+    saveData();
+}
+
+function logEx(text) {
+
+    const box =
+        document.getElementById("exploreLog");
+
+    const line =
+        document.createElement("div");
+
+    line.innerText = `▶ ${text}`;
+
+    box.appendChild(line);
+
+    box.scrollTop =
+        box.scrollHeight;
+}
+
+/* =========================
+   バトル開始
+========================= */
+
+function startBattle() {
+
+    battle.inBattle = true;
+
+    const enemyList = [
+        "はらぺこウルフ",
+        "悪戯ゴブリン",
+        "マンドラゴラ"
+    ];
+
+    battle.enemyName =
+        enemyList[Math.floor(Math.random() * enemyList.length)];
+
+    battle.enemyMaxHp =
+        Math.floor(Math.random() * 25) + 40;
+
+    battle.enemyHp =
+        battle.enemyMaxHp;
+
+    battle.buff = false;
+    battle.debuff = false;
+
+    document.getElementById("enemy-name").innerText =
+        battle.enemyName;
+
+    document.getElementById("bt-my-name").innerText =
+        document.getElementById("charName").value || "キャラ";
+
+    document.getElementById("battleView").style.display =
+        "flex";
+
+    document.getElementById("battleCmds").style.display =
+        "grid";
+
+    document.getElementById("explore-action-btn").style.display =
+        "none";
+
+    logEx(`⚠️ ${battle.enemyName} が現れた！`);
+
+    updateBattleUI();
+    saveData();
+}
+
+/* =========================
+   戦闘行動
+========================= */
+
+function fightAction(type) {
+
+    if (!battle.inBattle) return;
+
+    const charName =
+        document.getElementById("charName").value || "キャラ";
+
+    let damage = 0;
+
+    if (type === "normal") {
+
+        damage =
+            Math.floor(Math.random() * 6) + 8;
+    }
+
+    else if (type === "special") {
+
+        if (battle.mySp < 15) {
+            alert("SPが足りません");
+            return;
+        }
+
+        battle.mySp -= 15;
+
+        damage =
+            Math.floor(Math.random() * 10) + 18;
+    }
+
+    else if (type === "skill") {
+
+        if (battle.mySp < 20) {
+            alert("SPが足りません");
+            return;
+        }
+
+        battle.mySp -= 20;
+
+        if (Math.random() < 0.5) {
+            battle.buff = true;
+            logEx("✨ 攻撃バフ発動！");
+        }
+        else {
+            battle.debuff = true;
+            logEx("🔥 敵防御ダウン！");
+        }
+
+        enemyTurn();
+        updateBattleUI();
+        saveData();
+        return;
+    }
+
+    if (battle.buff) {
+        damage = Math.floor(damage * 1.5);
+    }
+
+    if (battle.debuff) {
+        damage = Math.floor(damage * 1.3);
+    }
+
+    battle.enemyHp -= damage;
+
+    logEx(`⚔️ ${charName}の攻撃！ ${damage}ダメージ`);
+
+    if (battle.enemyHp <= 0) {
+        winBattle();
+        return;
+    }
+
+    updateBattleUI();
+    saveData();
+
+    setTimeout(enemyTurn, 800);
+}
+
+/* =========================
+   戦闘アイテム ← 修正箇所
+========================= */
+
+function useBattleItem(type) {
+
+    if (!battle.inBattle) return;
+
+    if (type === "hp") {
+
+        if (bag.potionHp <= 0) {
+            alert("HP回復薬がありません");
+            return;
+        }
+
+        bag.potionHp--;
+
+        battle.myHp = battle.myMaxHp;
+
+        logEx("🧪 HP回復薬を使用！HP全回復！");
+    }
+
+    else if (type === "sp") {
+
+        if (bag.potionSp <= 0) {
+            alert("SP回復薬がありません");
+            return;
+        }
+
+        bag.potionSp--;
+
+        battle.mySp = battle.myMaxSp;
+
+        logEx("🔮 SP回復薬を使用！SP全回復！");
+    }
+
+    updateBattleUI();
+    saveData();
+
+    /* アイテム使ったら敵ターン */
+
+    setTimeout(enemyTurn, 700);
+}
+
+/* =========================
+   逃げる
+========================= */
+
+function runAway() {
+
+    if (!battle.inBattle) return;
+
+    const success = Math.random() < 0.75;
+
+    if (success) {
+
+        logEx("🏃 うまく逃げ切った！");
+
+        battle.inBattle = false;
+
+        document.getElementById("battleView").style.display =
+            "none";
+
+        document.getElementById("battleCmds").style.display =
+            "none";
+
+        document.getElementById("explore-action-btn").style.display =
+            "block";
+    }
+    else {
+        logEx("失敗した！");
+        setTimeout(enemyTurn, 600);
+    }
+
+    saveData();
+}
+
+/* =========================
+   敵ターン
+========================= */
+
+function enemyTurn() {
+
+    if (!battle.inBattle) return;
+
+    if (battle.enemyHp <= 0) return;
+
+    const damage =
+        Math.floor(Math.random() * 8) + 5;
+
+    battle.myHp -= damage;
+
+    if (battle.myHp < 0) {
+        battle.myHp = 0;
+    }
+
+    logEx(`💥 敵の攻撃！ ${damage} ダメージ`);
+
+    updateBattleUI();
+    saveData();
+
+    /* 負け判定 */
+
+    if (battle.myHp <= 0) {
+
+        logEx("💀 力尽きてしまった…");
+
+        setTimeout(() => {
+
+            battle.inBattle = false;
+
+            /* ペナルティ */
+
+            battle.myHp =
+                Math.floor(battle.myMaxHp * 0.5);
+
+            player.gold =
+                Math.max(0, player.gold - 20);
+
+            document.getElementById("battleView").style.display =
+                "none";
+
+            document.getElementById("battleCmds").style.display =
+                "none";
+
+            document.getElementById("explore-action-btn").style.display =
+                "block";
+
+            logEx("🏠 お部屋へ戻った…（20G失った）");
+
+            updateTopUI();
+            updateBattleUI();
+
+            saveData();
+
+        }, 1500);
+    }
+}
+
+/* =========================
+   勝利処理
+========================= */
+
+function winBattle() {
+
+    battle.enemyHp = 0;
+    battle.inBattle = false;
+
+    const goldReward =
+        Math.floor(Math.random() * 20) + 15;
+
+    player.gold += goldReward;
+    bag.meat++;
+
+    logEx(
+        `🎉 勝利！ 💰${goldReward}G と 🥩お肉を手に入れた！`
+    );
+
+    updateTopUI();
+    updateBattleUI();
+
+    setTimeout(() => {
+
+        document.getElementById("battleView").style.display =
+            "none";
+
+        document.getElementById("battleCmds").style.display =
+            "none";
+
+        document.getElementById("explore-action-btn").style.display =
+            "block";
+
+        logEx("探索を再開できます");
+
+        saveData();
+
+    }, 1800);
+}
+
+/* =========================
+   キッチンレシピ
+========================= */
+
+const recipes = [
+
+    {
+        id: "berry",
+        name: "採れたてベリー",
+        feed: 10,
+        love: 5,
+        cost: { berry: 1 },
+        desc: "森で拾った果実"
+    },
+
+    {
+        id: "stew",
+        name: "肉野菜シチュー",
+        feed: 35,
+        love: 18,
+        cost: {
+            meat: 1,
+            vegetable: 1
+        },
+        desc: "定番の手料理"
+    },
+
+    {
+        id: "premium",
+        name: "極上ステーキ",
+        feed: 60,
+        love: 35,
+        cost: {
+            meat: 1,
+            spice: 1
+        },
+        desc: "飽きリセット料理"
+    }
+
+];
+
+/* =========================
+   キッチンUI
+========================= */
+
+function updateKitchenUI() {
+
+    const container =
+        document.getElementById("kitchen-list");
+
+    container.innerHTML = "";
+
+    recipes.forEach(recipe => {
+
+        const canCook =
+            Object.entries(recipe.cost)
+            .every(([key, amount]) =>
+                (bag[key] || 0) >= amount
+            );
+
+        const card =
+            document.createElement("div");
+
+        card.className = "item-card";
+
+        card.innerHTML = `
+            <div class="item-name">${recipe.name}</div>
+
+            <div class="item-desc">
+                ${recipe.desc}
+            </div>
+
+            <button
+                class="item-btn"
+                ${canCook ? "" : "disabled"}
+                onclick="cookAndFeed('${recipe.id}')"
+            >
+                ${canCook ? "食べさせる" : "材料不足"}
+            </button>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+/* =========================
+   調理
+========================= */
+
+function cookAndFeed(recipeId) {
+
+    const recipe =
+        recipes.find(r => r.id === recipeId);
+
+    if (!recipe) return;
+
+    const canCook =
+        Object.entries(recipe.cost)
+        .every(([key, amount]) =>
+            (bag[key] || 0) >= amount
+        );
+
+    if (!canCook) {
+        alert("材料が足りません");
+        return;
+    }
+
+    Object.entries(recipe.cost)
+    .forEach(([key, amount]) => {
+        bag[key] -= amount;
+    });
+
+    let loveGain = recipe.love;
+
+    /* 同じもの連続 */
+
+    if (player.lastEaten === recipe.id) {
+
+        loveGain =
+            Math.floor(loveGain * 0.35);
+
+        alert("ちょっと飽きちゃったみたい…");
+    }
+
+    player.lastEaten = recipe.id;
+
+    /* 高級料理なら飽きリセット */
+
+    if (recipe.id === "premium") {
+        player.lastEaten = "";
+    }
+
+    player.love += loveGain;
+
+    player.fullness =
+        Math.min(
+            100,
+            player.fullness + recipe.feed
+        );
+
+    alert(
+        `${recipe.name}を食べた！\n好感度 +${loveGain}`
+    );
+
+    updateTopUI();
+    updateKitchenUI();
+
+    saveData();
+}
+
+/* =========================
+   ショップ
+========================= */
+
+const shopItems = [
+
+    {
+        id: "potionHp",
+        name: "HP回復薬",
+        price: 30,
+        desc: "戦闘中にHP全回復"
+    },
+
+    {
+        id: "potionSp",
+        name: "SP回復薬",
+        price: 25,
+        desc: "戦闘中にSP全回復"
+    },
+
+    {
+        id: "spice",
+        name: "高級スパイス",
+        price: 50,
+        desc: "料理用"
+    }
+
+];
+
+function updateShopUI() {
+
+    const container =
+        document.getElementById("shop-list");
+
+    container.innerHTML = "";
+
+    shopItems.forEach(item => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "item-card";
+
+        card.innerHTML = `
+            <div class="item-name">${item.name}</div>
+
+            <div class="item-desc">
+                ${item.desc}<br>
+                💰${item.price}
+            </div>
+
+            <button
+                class="item-btn"
+                onclick="buyItem('${item.id}', ${item.price})"
+                style="background:#10b981;"
+            >
+                購入
+            </button>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+function buyItem(id, price) {
+
+    if (player.gold < price) {
+        alert("ゴールド不足");
+        return;
+    }
+
+    player.gold -= price;
+
+    bag[id] =
+        (bag[id] || 0) + 1;
+
+    alert("購入しました");
+
+    updateTopUI();
+    saveData();
+} 
+
+/* =========================
+   留守番時間計算
+========================= */
+
+function calculateOfflineTime() {
+
+    const now = Date.now();
+
+    const lastSave =
+        localStorage.getItem("roommate_last_saved_time_v2");
+
+    localStorage.setItem(
+        "roommate_last_saved_time_v2",
+        String(now)
+    );
+
+    if (!lastSave) {
+        triggerGreeting();
+        return;
+    }
+
+    const diffSeconds =
+        Math.floor((now - Number(lastSave)) / 1000);
+
+    if (diffSeconds >= 15) {
+        triggerOfflineDiary(diffSeconds);
+    }
+    else {
+        triggerGreeting();
+    }
+}
+
+/* =========================
+   通常挨拶
+========================= */
+
+function triggerGreeting() {
+
+    let extra = "";
+
+    if (isBirthdayEvent === "char") {
+        extra = "今日はわたしの誕生日みたい！";
+    }
+
+    if (isBirthdayEvent === "user") {
+        extra = "今日はあなたの誕生日だね！";
+    }
+
+    document.getElementById("welcomeMessage").innerText =
+        `（話しかけるのを待っている… ${extra}）`;
+}
+
+/* =========================
+   Gemini安全設定
+========================= */
+
+const safetySettings = [
+
+    {
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_NONE"
+    },
+
+    {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_NONE"
+    },
+
+    {
+        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        threshold: "BLOCK_NONE"
+    },
+
+    {
+        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold: "BLOCK_NONE"
+    }
+
+];
+
+/* =========================
+   留守番日記
+========================= */
+
+async function triggerOfflineDiary(seconds) {
+
+    const apiKey =
+        document.getElementById("apiKey").value.trim();
+
+    const name =
+        document.getElementById("charName").value || "ミルク";
+
+    const goldReward =
+        Math.min(100, Math.floor(seconds * 0.25));
+
+    const berryReward =
+        Math.min(5, Math.floor(seconds * 0.03));
+
+    player.gold += goldReward;
+    bag.berry += berryReward;
+
+    updateTopUI();
+
+    document.getElementById("diaryOverlay").style.display =
+        "flex";
+
+    document.getElementById("diaryTitle").innerText =
+        `${name}の留守番日記`;
+
+    document.getElementById("diaryRewards").innerText =
+        `💰 +${goldReward}G | 🍓 +${berryReward}`;
+
+    if (!apiKey) {
+        document.getElementById("diaryBody").innerText =
+            "お留守番していたよ。";
+        return;
+    }
+
+    const systemPrompt = `
+あなたは育成ゲームのキャラクターです。
+
+名前:${name}
+性格:${getFullPersonality()}
+
+プレイヤーがしばらく留守でした。
+
+その間何をしていたか、
+キャラクターらしく2文以内で話してください。
+`;
+
+    try {
+
+        const response =
+            await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [
+                                    { text: "留守番日記を書いて" }
+                                ]
+                            }
+                        ],
+
+                        systemInstruction: {
+                            parts: [
+                                { text: systemPrompt }
+                            ]
+                        },
+
+                        safetySettings
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            data.candidates &&
+            data.candidates[0]?.content?.parts?.[0]?.text
+        ) {
+            document.getElementById("diaryBody").innerText =
+                data.candidates[0]
+                .content.parts[0].text.trim();
+        }
+        else {
+            document.getElementById("diaryBody").innerText =
+                "静かに待っていたよ。";
+        }
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        document.getElementById("diaryBody").innerText =
+            "静かに待っていたよ。";
+    }
+
+    saveData();
+}
+
+function closeDiary() {
+
+    document.getElementById("diaryOverlay").style.display =
+        "none";
+
+    saveData();
+}
+
+/* =========================
+   会話送信
+========================= */
+
+async function sendMessage() {
+
+    const apiKey =
+        document.getElementById("apiKey").value.trim();
+
+    if (!apiKey) {
+        alert("APIキーを入力してください");
+        return;
+    }
+
+    const userInput =
+        document.getElementById("userInput");
+
+    const text =
+        userInput.value.trim();
+
+    if (!text) return;
+
+    appendMessage(text, "user-msg");
+
+    userInput.value = "";
+
+    document.getElementById("ai-status").innerText =
+        "思考中…";
+
+    const characterName =
+        document.getElementById("charName").value;
+
+    const userName =
+        document.getElementById("userName").value;
+
+    let strokePrompt = "";
+
+    if (strokeCountJustNow > 0) {
+
+        strokePrompt =
+        `プレイヤーはさっき${strokeCountJustNow}回あなたを撫でました。最初にリアクションしてください`;
+
+        strokeCountJustNow = 0;
+    }
+
+    const systemPrompt = `
+あなたは育成ゲームのキャラクターです。
+
+名前:${characterName}
+性格:${getFullPersonality()}
+
+プレイヤー:${userName}
+
+現在状態
+好感度:${player.love}
+満腹:${player.fullness}
+
+ルール:
+・2〜3文
+・自然な会話
+・キャラ設定を崩さない
+
+${strokePrompt}
+`;
+
+    const history = [
+        ...chatHistory,
+        {
+            role: "user",
+            parts: [
+                { text }
+            ]
+        }
+    ];
+
+    try {
+
+        const response =
+            await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        contents: history,
+
+                        systemInstruction: {
+                            parts: [
+                                { text: systemPrompt }
+                            ]
+                        },
+
+                        safetySettings
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            data.candidates &&
+            data.candidates[0]?.content?.parts?.[0]?.text
+        ) {
+
+            const reply =
+                data.candidates[0]
+                .content.parts[0].text.trim();
+
+            appendMessage(reply, "ai-msg");
+
+            chatHistory = history;
+
+            chatHistory.push({
+                role: "model",
+                parts: [
+                    { text: reply }
+                ]
+            });
+
+            if (chatHistory.length > 20) {
+                chatHistory = chatHistory.slice(-20);
+            }
+
+            saveData();
+        }
+        else {
+
+            appendMessage(
+                "……うまく言葉が出ないみたい。",
+                "ai-msg"
+            );
+        }
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        appendMessage(
+            "通信エラーが起きたみたい。",
+            "ai-msg"
+        );
+    }
+
+    document.getElementById("ai-status").innerText = "";
+}
+
+/* =========================
+   Enter送信
+========================= */
+
+document.addEventListener("keydown", event => {
+
+    if (event.key !== "Enter") return;
+
+    const active =
+        document.activeElement;
+
+    if (active && active.id === "userInput") {
+
+        event.preventDefault();
+
+        sendMessage();
+    }
+});
+
+</script>
+</body>
+</html>
